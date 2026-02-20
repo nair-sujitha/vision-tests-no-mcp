@@ -2,7 +2,7 @@ import requests
 import os
 import asyncio
 
-api_key = "AIzaSyDoiEpkt3-ffrdUSMM2pr2vsZIKmz2wHYM"
+api_key = "your api key"
 
 url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
 
