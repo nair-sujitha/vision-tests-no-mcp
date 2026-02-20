@@ -23,9 +23,9 @@ options.set_capability("appium:adbExecTimeout", 60000)      # Wait longer for AD
 driver = webdriver.Remote("http://localhost:4723", options=options)
 
 # 2. Setup Gemini Client
-#client = genai.Client(api_key="AIzaSyCnufRsLH5E8MyAqEgxu9ogp-DiinyOskQ")
+
 client = genai.Client(
-    api_key="AIzaSyCnufRsLH5E8MyAqEgxu9ogp-DiinyOskQ")
+    api_key="your api key")
 model_id = "gemini-2.5-computer-use-preview-10-2025"#"gemini-3-pro-preview"#"gemini-2.5-flash"
 
 
