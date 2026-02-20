@@ -1,0 +1,40 @@
+{
+  "planner": {
+    "provider": "openai",
+    "model": "gpt-5-nano"
+  },
+  "orchestrator": {
+    "provider": "openai",
+    "model": "gpt-5-nano"
+  },
+  "contextor": {
+    "provider": "openai",
+    "model": "gpt-5-nano",
+    "fallback": {
+      "provider": "openai",
+      "model": "gpt-5-mini"
+    }
+  },
+  "cortex": {
+    "provider": "google",
+    "model": "gemini-2.5-pro",
+    "fallback": {
+      "provider": "google",
+      "model": "gemini-2.5-flash"
+    }
+  },
+  "executor": {
+    "provider": "openai",
+    "model": "gpt-5-nano"
+  },
+  "utils": {
+    "hopper": {
+      "provider": "openai",
+      "model": "gpt-5-nano"
+    },
+    "outputter": {
+      "provider": "openai",
+      "model": "gpt-5-nano"
+    }
+  }
+}
