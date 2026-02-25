@@ -6,7 +6,6 @@ from appium import webdriver
 from appium.options.android import UiAutomator2Options
 
 from drivers.appium_driver import scale_coordinates
-from selenium.webdriver.support.ui import WebDriverWait
 import time
 
 # 1. Setup Appium for Home Depot App
@@ -23,9 +22,9 @@ options.set_capability("appium:adbExecTimeout", 60000)      # Wait longer for AD
 driver = webdriver.Remote("http://localhost:4723", options=options)
 
 # 2. Setup Gemini Client
-
+API_KEY = os.getenv("API_KEY")
 client = genai.Client(
-    api_key="your api key")
+    api_key=API_KEY)
 model_id = "gemini-2.5-computer-use-preview-10-2025"#"gemini-3-pro-preview"#"gemini-2.5-flash"
 
 
@@ -206,6 +205,37 @@ def save_debug_screenshot(screenshot_bytes, turn_count):
         f.write(screenshot_bytes)
     print(f"📸 Screenshot saved: {filename}")
 
+def universal_type(driver, text_to_type, x, y, press_enter=True):
+    """
+    Enterprise-safe typing: Works on Local, Sauce Labs, and Cloud grids.
+    """
+    try:
+        # 1. Focus the field
+        driver.tap([(x, y)])
+        time.sleep(1)
+
+        # 2. Use the 'Actions' API (Secure & Standard)
+        # This simulates hardware keyboard input to the 'focused' element
+        from selenium.webdriver.common.action_chains import ActionChains
+        actions = ActionChains(driver)
+        actions.send_keys(text_to_type)
+        if press_enter:
+            from selenium.webdriver.common.keys import Keys
+            actions.send_keys(Keys.ENTER)
+        actions.perform()
+        print(f"⌨️ Typed '{text_to_type}' via ActionChains")
+
+    except Exception as e:
+        print(f"⚠️ ActionChains failed, attempting Sauce-compatible shell: {e}")
+        # 3. Sauce Labs now supports specific mobile:shell commands
+        # for real devices without --relaxed-security
+        driver.execute_script('mobile: shell', {
+            'command': 'input',
+            'args': ['text', text_to_type]
+        })
+        if press_enter:
+            driver.press_keycode(66) # Standard Android Enter Key
+
 
 def run_agentic_automation(goal, max_turns=20):
     history = []
@@ -275,11 +305,7 @@ def run_agentic_automation(goal, max_turns=20):
                     driver.tap([(x, y)])
                     print(f"🖱️ Action: Tap at {x}, {y}")
                 elif "type_text_at" in action:
-                    driver.tap([(x, y)])
-                    time.sleep(1)
-                    driver.execute_script('mobile: shell', {'command': 'input', 'args': ['text', args['text']]})
-                    if args.get('press_enter'):
-                        driver.execute_script('mobile: shell', {'command': 'input', 'args': ['keyevent', '66']})
+                    universal_type(driver, args['text'], x, y)
                     print(f"⌨️ Action: Typed '{args['text']}'")
                 elif "scroll_document" in action:
                     direction = args.get('direction', 'down')
